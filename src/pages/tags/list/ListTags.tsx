@@ -4,10 +4,23 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useLoaderData } from "react-router-dom";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import ConfirmDialog from "@/components/dialog/ConfirmDialog";
+import { Tag } from "@/types/Tag";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import CreateTagComponent from "@/components/tags/CreateTag";
 export default function ListTagsPage() {
-  const { tags } = useLoaderData();
+  const { tags } = useLoaderData() as { tags: Tag[] };
 
   const removeTag = (id: string) => {};
+  const [modalCreateTag, setModalCreateTag] = useState(false);
 
   const columns: ColumnDef<Tag>[] = [
     {
@@ -39,7 +52,7 @@ export default function ListTagsPage() {
             </Button>
             <ConfirmDialog
               title="Remover"
-              message="Are you shure ? \n By accpeting this the tag will be removed from the system?"
+              message="Are you shure?  By accpeting this the tag will be removed from the system."
               onCancel={() => console.log("cancelou")}
               onConfirm={() => console.log("confirmou")}
               trigger={
@@ -53,13 +66,36 @@ export default function ListTagsPage() {
       },
     },
   ];
+
+  const createTag = (data: {
+    name: string;
+    description: string;
+    active: boolean;
+  }) => {
+    console.log(data);
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between">
         <h1 className="mb-5 text-3xl font-bold">Tags</h1>
-        <Button variant="default">Create Tag + </Button>
+        <Button variant="default" onClick={() => setModalCreateTag(true)}>
+          Create Tag +{" "}
+        </Button>
       </div>
       <DataTable columns={columns} data={tags} />
+      <Dialog
+        open={modalCreateTag}
+        onOpenChange={(value) => setModalCreateTag(value)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create tag</DialogTitle>
+            <DialogDescription>Create a new tag.</DialogDescription>
+            <CreateTagComponent onSubmit={createTag} />
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
