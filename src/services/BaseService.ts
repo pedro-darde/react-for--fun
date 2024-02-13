@@ -1,5 +1,11 @@
 import axiosInstance from "@/lib/axios";
 
+type PaginatedResponse<T> = {
+  rows: T[];
+  total: number;
+  page: number;
+  per_page: number;
+};
 export class BaseService<T> {
   constructor(private readonly serviceName: string) {}
 
@@ -8,8 +14,16 @@ export class BaseService<T> {
     return response.data;
   }
 
-  public async getAll(): Promise<T[]> {
-    const response = await axiosInstance.get<T[]>(this.serviceName);
+  public async getAll(page = 0, perPage = 10): Promise<PaginatedResponse<T>> {
+    const response = await axiosInstance.get<PaginatedResponse<T>>(
+      this.serviceName,
+      {
+        params: {
+          page,
+          per_page: perPage,
+        },
+      },
+    );
     return response.data;
   }
 

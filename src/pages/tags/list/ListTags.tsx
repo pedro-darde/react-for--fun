@@ -1,26 +1,46 @@
 import { DataTable } from "@/components/datatable/DataTable";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { useLoaderData } from "react-router-dom";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import ConfirmDialog from "@/components/dialog/ConfirmDialog";
 import { Tag } from "@/types/Tag";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 import CreateTagComponent from "@/components/tags/CreateTag";
+import { TagService } from "@/services/TagService";
 export default function ListTagsPage() {
-  const { tags } = useLoaderData() as { tags: Tag[] };
+  const [tags, setTags] = useState<{
+    rows: Tag[];
+    total: number;
+    per_page: number;
+    page: number;
+  }>({
+    rows: [],
+    total: 0,
+    per_page: 0,
+    page: 0,
+  });
 
-  const removeTag = (id: string) => {};
+  const removeTag = (id: string) => {
+    TagService.delete(id);
+  };
   const [modalCreateTag, setModalCreateTag] = useState(false);
+
+  const fetchTags = async (page = 0, perPage = 10) => {
+    const response = await TagService.getAll(page, perPage);
+    setTags(response);
+  };
+  useEffect(() => {
+    fetchTags();
+  }, []);
 
   const columns: ColumnDef<Tag>[] = [
     {
@@ -54,7 +74,7 @@ export default function ListTagsPage() {
               title="Remover"
               message="Are you shure?  By accpeting this the tag will be removed from the system."
               onCancel={() => console.log("cancelou")}
-              onConfirm={() => console.log("confirmou")}
+              onConfirm={() => removeTag(row.original.id!)}
               trigger={
                 <Button variant="outline">
                   <TrashIcon color="tomato" width={20} height={20} />
@@ -72,18 +92,27 @@ export default function ListTagsPage() {
     description: string;
     active: boolean;
   }) => {
-    console.log(data);
+    TagService.create(data);
+    setModalCreateTag(false);
+    toast.success("Tag created successfully");
   };
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container  m-5  py-10">
       <div className="flex justify-between">
         <h1 className="mb-5 text-3xl font-bold">Tags</h1>
         <Button variant="default" onClick={() => setModalCreateTag(true)}>
           Create Tag +{" "}
         </Button>
       </div>
-      <DataTable columns={columns} data={tags} />
+      <DataTable
+        columns={columns}
+        data={tags}
+        handleNextPage={(page, perPage) => {
+          console.log(page, perPage);
+          fetchTags(page, perPage);
+        }}
+      />
       <Dialog
         open={modalCreateTag}
         onOpenChange={(value) => setModalCreateTag(value)}
