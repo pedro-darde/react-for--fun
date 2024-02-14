@@ -1,13 +1,14 @@
 import { Tag } from "./Tag";
 
-export type RecipePhoto = {
+export type RecipeImages = {
   id?: string;
   path: string;
   name: string;
-  date: Date;
-  fullName: string;
-  size: number;
-  recipeId?: string;
+  full_name: string;
+  description?: string;
+  active: boolean;
+  created_at? : string;
+  updated_at? : string;
 };
 
 export type Recipe = {
@@ -15,7 +16,8 @@ export type Recipe = {
   name: string;
   description: string;
   ingredients: string[];
-  photos: RecipePhoto[];
+  images: RecipeImages[];
   steps: string[];
+  difficulty: "easy" | "medium" | "hard" | "professional";
   tags: Tag[];
 };

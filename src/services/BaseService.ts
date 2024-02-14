@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axios";
 
-type PaginatedResponse<T> = {
+export type PaginatedResponse<T> = {
   rows: T[];
   total: number;
   page: number;

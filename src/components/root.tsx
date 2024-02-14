@@ -27,6 +27,13 @@ export default function Root() {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link to="/recipes">
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Recipes
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex h-screen items-center justify-center p-5">
