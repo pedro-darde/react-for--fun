@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { TrashIcon } from "@radix-ui/react-icons";
 import { z } from "zod";
 import {
   Select,
@@ -92,6 +93,42 @@ export default function CreateRecipeComponent({
   });
 
   const buttonAddIngredient = useRef<HTMLButtonElement>(null);
+  const buttonAddStep = useRef<HTMLButtonElement>(null);
+
+  const handleAddIngredient = (field: { value: string }) => {
+    if (!field.value) return;
+    const currentIngredients = form.getValues().ingredients;
+    const values = field.value.split(",").map((value) => value.trim());
+    const nonExistentIngredients = values.filter(
+      (item) => !currentIngredients.includes(item)
+    );
+
+    if (!nonExistentIngredients.length) {
+      return;
+    }
+
+    form.setValue("ingredients", [
+      ...form.getValues().ingredients,
+      ...nonExistentIngredients,
+    ]);
+    form.setValue("ingedientsStr", "");
+  };
+
+  const handleAddStep = (field: { value: string }) => {
+    if (!field.value) return;
+    const currentSteps = form.getValues().steps;
+    const values = field.value.split(",").map((value) => value.trim());
+    const nonExistentSteps = values.filter(
+      (item) => !currentSteps.includes(item)
+    );
+
+    if (!nonExistentSteps.length) {
+      return;
+    }
+
+    form.setValue("steps", [...form.getValues().steps, ...nonExistentSteps]);
+    form.setValue("stepsString", "");
+  };
 
   return (
     <div>
@@ -179,10 +216,7 @@ export default function CreateRecipeComponent({
                 <FormLabel>Ingredients</FormLabel>
                 <FormControl>
                   <div className="flex flex-col">
-                    <div
-                      className="flex flex-row justify-between gap-2"
-                      style={{}}
-                    >
+                    <div className="flex flex-row justify-between gap-2">
                       <Input
                         placeholder="shadcn"
                         {...field}
@@ -196,30 +230,9 @@ export default function CreateRecipeComponent({
                       <Button
                         ref={buttonAddIngredient}
                         type="button"
-                        onClick={() => {
-                          if (!field.value) return;
-                          const currentIngredients =
-                            form.getValues().ingredients;
-                          const values = field.value
-                            .split(",")
-                            .map((value) => value.trim());
-                          const nonExistentIngredients = values.filter(
-                            (item) => !currentIngredients.includes(item)
-                          );
-
-                          if (!nonExistentIngredients.length) {
-                            return;
-                          }
-
-                          form.setValue("ingredients", [
-                            ...form.getValues().ingredients,
-                            ...nonExistentIngredients,
-                          ]);
-                          form.setValue("ingedientsStr", "");
-                        }}
+                        onClick={() => handleAddIngredient(field)}
                       >
-                        {" "}
-                        +{" "}
+                        +
                       </Button>
                     </div>
                     <div className="flex flex-row gap-1 mt-2 flex-wrap items-center">
@@ -257,6 +270,85 @@ export default function CreateRecipeComponent({
                   {form.formState.errors.ingredients?.message &&
                   !form.getValues().ingredients.length ? (
                     <p> {form.formState.errors.ingredients?.message}</p>
+                  ) : null}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="stepsString"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Steps</FormLabel>
+                <FormControl>
+                  <div className="flex flex-col">
+                    <div
+                      className="flex flex-row justify-between gap-2"
+                      style={{}}
+                    >
+                      <Input
+                        placeholder="shadcn"
+                        {...field}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            console.log("clickou enter");
+                            event.preventDefault();
+                            buttonAddStep.current?.click();
+                          }
+                        }}
+                      />
+                      <Button
+                        ref={buttonAddStep}
+                        type="button"
+                        onClick={() => handleAddStep(field)}
+                      >
+                        +
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          form.resetField("stepsString");
+                          form.setValue("steps", []);
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                    <div className="flex flex-column gap-1 mt-2 flex-wrap items-start max-h-30 overflow-auto">
+                      {form.getValues().steps?.map((step, index) => (
+                        <div
+                          className="flex flex-row gap-1 items-center w-full justify-between"
+                          style={{
+                            border: "1.75px solid #e2e8f0",
+                            borderRadius: "0.375rem",
+                          }}
+                        >
+                          <p className="rounded-lg bg-gray-900 py-0.5 px-1  italic text-[10px] font-sans text-sm  text-white  w-full">
+                            {index + 1} - {step}
+                            <Button
+                              className="rounded-lg  bg-gray-900 p-2 ml-2"
+                              onClick={() => {
+                                const steps = form.getValues().steps;
+                                steps.splice(index, 1);
+                                form.setValue("steps", steps);
+                              }}
+                            >
+                              X
+                            </Button>
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  You can separate the steps with a comma
+                </FormDescription>
+                <FormMessage>
+                  {form.formState.errors.steps?.message &&
+                  !form.getValues().steps.length ? (
+                    <p> {form.formState.errors.steps?.message}</p>
                   ) : null}
                 </FormMessage>
               </FormItem>
