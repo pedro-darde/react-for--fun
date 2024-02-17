@@ -71,7 +71,7 @@ export default function ListRecipe() {
           <DialogHeader>
             <DialogTitle>Create Recipe</DialogTitle>
             <DialogDescription>Create a new recipe.</DialogDescription>
-            <CreateRecipeComponent onSubmit={(data) => {}} />
+            <CreateRecipeComponent onSubmit={(data) => { }} />
           </DialogHeader>
         </DialogContent>
       </Dialog>
