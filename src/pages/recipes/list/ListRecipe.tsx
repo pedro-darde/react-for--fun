@@ -9,11 +9,26 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { PaginatedResponse } from "@/services/BaseService";
+import { JsonService } from "@/services/JsonService";
 import { RecipeService } from "@/services/RecipeService";
+import { JsonList } from "@/types/JsonList";
 import { Recipe } from "@/types/Recipe";
-import { useState } from "react";
+import { Tag } from "@/types/Tag";
+import { useEffect, useState } from "react";
 
 export default function ListRecipe() {
+  const [tags, setTags] = useState<JsonList[]>([]);
+
+  const searchTags = async () => {
+    const jsonTagService = new JsonService<Tag>("tags");
+    const data = await jsonTagService.getJson();
+    setTags(data);
+  };
+
+  useEffect(() => {
+    searchTags();
+  }, []);
+
   const [recipes, setRecipes] = useState<PaginatedResponse<Recipe>>({
     page: 0,
     per_page: 10,
@@ -71,7 +86,14 @@ export default function ListRecipe() {
           <DialogHeader>
             <DialogTitle>Create Recipe</DialogTitle>
             <DialogDescription>Create a new recipe.</DialogDescription>
-            <CreateRecipeComponent onSubmit={(data) => { }} />
+            <CreateRecipeComponent
+              onSubmit={(data) => {}}
+              tags={tags}
+              onAddNewTag={(tag) => {
+                console.log(tag);
+                setTags([...tags, { value: tag, label: tag }]);
+              }}
+            />
           </DialogHeader>
         </DialogContent>
       </Dialog>
