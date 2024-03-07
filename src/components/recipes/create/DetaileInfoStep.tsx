@@ -160,15 +160,12 @@ export default function DetailedInfoStep({
         name="tags"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Ingredients</FormLabel>
+            <FormLabel>Tags</FormLabel>
             <FormControl>
               <MultiSelect
                 onChange={field.onChange}
                 options={tags}
                 selected={field.value}
-                onAddNew={(tag) => {
-                  onAddNewTag(tag);
-                }}
               />
             </FormControl>
             <FormDescription>

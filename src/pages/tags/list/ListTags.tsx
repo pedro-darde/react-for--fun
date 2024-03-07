@@ -31,6 +31,7 @@ export default function ListTagsPage() {
 
   const removeTag = (id: string) => {
     TagService.delete(id);
+    fetchTags();
   };
   const [modalCreateTag, setModalCreateTag] = useState(false);
 
@@ -95,6 +96,7 @@ export default function ListTagsPage() {
     TagService.create(data);
     setModalCreateTag(false);
     toast.success("Tag created successfully");
+    fetchTags();
   };
 
   return (

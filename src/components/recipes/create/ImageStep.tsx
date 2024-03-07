@@ -34,9 +34,7 @@ export default function ImagesStep({ form }: ImageStepsProps) {
                 fileExtension={["jpeg", "png", "jpeg"]}
               />
             </FormControl>
-            <FormDescription>
-              {JSON.stringify(field.value)} - aaa{" "}
-            </FormDescription>
+            <FormDescription></FormDescription>
             <FormMessage />
           </FormItem>
         )}

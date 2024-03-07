@@ -21,14 +21,14 @@ import ImagesStep from "./create/ImageStep";
 type CreateRecipeComponentProps = {
   onSubmit: (data: {
     name: string;
-    descritpion: string;
+    description: string;
     ingredients: string[];
     steps: string[];
     difficulty: "easy" | "medium" | "hard" | "professional";
     time: number;
     active: boolean;
     tags: string[];
-    images: string[];
+    images: File[];
   }) => void;
   tags: JsonList[];
   onAddNewTag: (value: string) => void;
@@ -45,7 +45,7 @@ export default function CreateRecipeComponent({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
-      descritpion: "",
+      description: "",
       ingredients: [],
       steps: [],
       difficulty: "easy",
@@ -98,17 +98,22 @@ export default function CreateRecipeComponent({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => {
-            console.log(data);
-            // onSubmit({
-            //   active: data.active,
-            //   description: data.descritpion,
-            //   name: data.name,
-            // });
+            onSubmit({
+              active: data.active,
+              description: data.description,
+              difficulty: data.difficulty,
+              images: data.images,
+              ingredients: data.ingredients,
+              name: data.name,
+              steps: data.steps,
+              tags: data.tags,
+              time: parseInt(data.time),
+            });
           })}
-          className="space-y-6 w-100"
+          className="space-y-6"
         >
-          <Tabs defaultValue="account" className="w-[400px]">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs defaultValue="account">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="account">Basic Info</TabsTrigger>
               <TabsTrigger value="password">Details Info</TabsTrigger>
               <TabsTrigger value="images">Images</TabsTrigger>
@@ -145,9 +150,7 @@ export default function CreateRecipeComponent({
               <Card>
                 <CardHeader>
                   <CardTitle>Images</CardTitle>
-                  <CardDescription>
-                    Some detailed information about the recipe
-                  </CardDescription>
+                  <CardDescription>Images of the recipe</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <ImagesStep form={form} />

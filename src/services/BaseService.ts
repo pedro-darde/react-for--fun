@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/axios";
+import { converteObjectToFormData } from "@/lib/utils";
 
 export type PaginatedResponse<T> = {
   rows: T[];
@@ -6,6 +7,8 @@ export type PaginatedResponse<T> = {
   page: number;
   per_page: number;
 };
+
+
 export class BaseService<T> {
   protected readonly axiosInstance = axiosInstance;
   constructor(private readonly serviceName: string) {}
@@ -44,4 +47,15 @@ export class BaseService<T> {
   public async delete(id: string): Promise<void> {
     await this.axiosInstance.delete(`${this.serviceName}/${id}`);
   }
+
+  public async createWithFormData(data: T) {
+    const dataToSend = converteObjectToFormData(data);
+    const response = await this.axiosInstance.post<T>(this.serviceName, dataToSend, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+    return response.data;
+  }
+  
 }

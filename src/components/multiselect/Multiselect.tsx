@@ -23,7 +23,7 @@ interface MultiSelectProps {
   selected: string[];
   onChange: React.Dispatch<React.SetStateAction<string[]>>;
   className?: string;
-  onAddNew: (value: string) => void;
+  onAddNew?: (value: string) => void;
 }
 
 function MultiSelect({
@@ -108,23 +108,27 @@ function MultiSelect({
             value={searchValue}
           />
           <CommandEmpty>
-            <Badge variant="secondary" className="mr-1 mb-1 text-wrap p-2">
-              <button
-                className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 flex gap-2 items-center p-3"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                onClick={() => {
-                  onAddNew(searchValue);
-                  onChange([searchValue]);
-                  setSearchValue("");
-                }}
-              >
-                {searchValue}
-                <Plus className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-              </button>
-            </Badge>
+            {onAddNew != null ? (
+              <Badge variant="secondary" className="mr-1 mb-1 text-wrap p-2">
+                <button
+                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 flex gap-2 items-center p-3"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onClick={() => {
+                    onAddNew(searchValue);
+                    onChange([searchValue]);
+                    setSearchValue("");
+                  }}
+                >
+                  {searchValue}
+                  <Plus className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                </button>
+              </Badge>
+            ) : (
+              "No results found."
+            )}
           </CommandEmpty>
 
           <CommandGroup className="max-h-64 overflow-auto">

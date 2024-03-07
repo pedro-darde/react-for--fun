@@ -4,7 +4,7 @@ export const FormSchema = z.object({
     name: z.string().min(2, {
         message: "The must be at least 2 characters.",
     }),
-    descritpion: z.string(),
+    description: z.string(),
     ingredients: z.string().array().min(1, {
         message: "At least one ingredient is required",
     }),

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EyeOpenIcon } from "@radix-ui/react-icons";
 
 // Define the props expected by the Dropzone component
 interface DropzoneProps {
@@ -51,7 +52,9 @@ export function Dropzone({
       const [_, ext] = uploadedFile.type.split("/");
       // Check file extension
       if (fileExtension && !fileExtension.includes(ext)) {
-        errors.push(`Invalid file type. Expected: .${fileExtension}`);
+        errors.push(
+          `Invalid file type. Expected: .${fileExtension.join(", ")}`
+        );
         continue;
       }
       newFiles.push(uploadedFile);
@@ -66,7 +69,7 @@ export function Dropzone({
     setFileInfo((current) => {
       return [...current, ...newFiles];
     });
-    onChange(Array.from(files));
+    onChange([...fileInfo, ...newFiles]);
   };
 
   // Function to simulate a click on the file input element
@@ -74,6 +77,11 @@ export function Dropzone({
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
+  };
+
+  const handlePreviewFile = (file: File) => {
+    const urlObject = URL.createObjectURL(file);
+    window.open(urlObject);
   };
 
   return (
@@ -92,6 +100,7 @@ export function Dropzone({
             size="sm"
             className="ml-auto flex h-8 space-x-2 px-0 pl-1 text-xs"
             onClick={handleButtonClick}
+            type="button"
           >
             Drag Files to Upload or Click Here
           </Button>
@@ -105,27 +114,35 @@ export function Dropzone({
           />
         </div>
         <div className="flex flex-col gap-2">
-          {fileInfo?.length &&
-            fileInfo.map((info, index) => (
-              <div className="flex flex-row gap-2 items-center">
-                <span key={index} className="text-green-500">
-                  {info.name} - {Math.round(info.size / 1024)} KB
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    console.log(fileInfo.length);
-                    const newFiles = fileInfo.filter((_, i) => i !== index);
-                    setFileInfo(newFiles);
-                    onChange(fileInfo);
-                  }}
-                >
-                  {" "}
-                  CClear{" "}
-                </Button>
-              </div>
-            ))}
+          {fileInfo?.length
+            ? fileInfo.map((info, index) => (
+                <div className="flex flex-row gap-2 items-center">
+                  <span key={index} className="text-green-500">
+                    {info.name} - {Math.round(info.size / 1024)} KB
+                  </span>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handlePreviewFile(info)}
+                  >
+                    <EyeOpenIcon />
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const newFiles = fileInfo.filter((_, i) => i !== index);
+                      setFileInfo(newFiles);
+                      onChange(newFiles);
+                    }}
+                  >
+                    Clear{" "}
+                  </Button>
+                </div>
+              ))
+            : null}
         </div>
 
         {error?.length

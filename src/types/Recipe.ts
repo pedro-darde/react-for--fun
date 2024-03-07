@@ -20,4 +20,5 @@ export type Recipe = {
   steps: string[];
   difficulty: "easy" | "medium" | "hard" | "professional";
   tags: Tag[];
+  active: boolean
 };

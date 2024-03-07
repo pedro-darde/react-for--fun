@@ -110,7 +110,7 @@ export default function BasicInfoStep({ form }: BasicInfoStep) {
         </div>
         <FormField
           control={form.control}
-          name="descritpion"
+          name="description"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
