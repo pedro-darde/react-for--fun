@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { FormSchema } from "./utils/formSchema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -112,6 +112,7 @@ export default function CreateRecipeComponent({
           })}
           className="space-y-6"
         >
+
           <Tabs defaultValue="account">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="account">Basic Info</TabsTrigger>
