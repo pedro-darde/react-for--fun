@@ -20,13 +20,13 @@ export const FormSchema = z.object({
         message: "At least one tag is required",
     }),
     images: z
-    .array(
-      z
-        .instanceof(File)
-    )
-    .min(1, 'At least 1 file is required')
-    .refine(
-      (files) => files.every((file) => file.size < 2 * 1024 * 1024),
-      'File size must be less than 2MB',
-    ),
+        .array(
+            z
+                .instanceof(File)
+        )
+        .min(1, 'At least 1 file is required')
+        .refine(
+            (files) => files.every((file) => file.size < 2 * 1024 * 1024),
+            'File size must be less than 2MB',
+        ),
 });

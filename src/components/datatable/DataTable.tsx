@@ -75,6 +75,7 @@ export function DataTable<TData, TValue>({
     },
     onPaginationChange: setPagination,
     manualPagination: true,
+    enableSorting: true,
   });
 
   const range = (start: number, stop: number, step: number) =>
@@ -93,13 +94,15 @@ export function DataTable<TData, TValue>({
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id}>
+                      <TableHead key={header.id} style={{
+                        width: header.column.columnDef.size,
+                      }}>
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}

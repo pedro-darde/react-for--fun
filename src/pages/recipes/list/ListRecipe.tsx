@@ -50,6 +50,8 @@ export default function ListRecipe() {
     {
       accessorKey: "id",
       header: "ID",
+      enableResizing: false,
+      size: 5
     },
     {
       accessorKey: "name",
@@ -63,6 +65,8 @@ export default function ListRecipe() {
     {
       accessorKey: "steps",
       header: "Steps",
+      size: 400,
+      enableResizing: true,
       cell({ row: { original } }) {
         return (
           <div className="flex flex-col gap-4 w-1/2">
@@ -80,6 +84,7 @@ export default function ListRecipe() {
     {
       accessorKey: "tags",
       header: "Tags",
+      size: 400,
       cell({ row: { original } }) {
         return (
           <div className="flex flex-col gap-4 w-1/2">
@@ -97,11 +102,12 @@ export default function ListRecipe() {
     {
       accessorKey: "ingredients",
       header: "Ingredients",
-      cell({ row: { original } }) {
+      cell({ row: { original: { ingredients } } }) {
         return (
           <div className="flex flex-col gap-4 ">
-            {original.ingredients.map((ingredient, index) => {
-              return <Badge color="blue">{ingredient}</Badge>;
+            {ingredients.map((ingredient) => {
+              return <Badge color="blue" >
+                <span className="text-wrap">{ingredient.substring(0, 10).concat("...")}</span></Badge>;
             })}
           </div>
         );
@@ -113,6 +119,7 @@ export default function ListRecipe() {
       cell({ row: { original } }) {
         return <Badge> {original.active ? "Yes" : "No"} </Badge>;
       },
+      size: 1
     },
   ];
 
@@ -124,6 +131,7 @@ export default function ListRecipe() {
       toast.error("Error while saving recipe, please contact admin.");
     } finally {
       setModalCreateRecipe(false);
+      fetchRecipes();
     }
   };
 
