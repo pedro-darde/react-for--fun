@@ -2,69 +2,57 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "../ui/input";
-import { Checkbox } from "../ui/checkbox";
-import { Textarea } from "../ui/textarea";
-import { useRef } from "react";
-import ChipComponent from "./ChipComponent";
+import { Form } from "@/components/ui/form";
 import { FormSchema } from "./utils/formSchema";
-import { difficultyOptions } from "./utils/selectOptions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import { Label } from "@radix-ui/react-label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import BasicInfoStep from "./create/BasicInfoStep";
 import DetailedInfoStep from "./create/DetaileInfoStep";
+import { JsonList } from "@/types/JsonList";
+import { useRef } from "react";
+import ImagesStep from "./create/ImageStep";
 
 type CreateRecipeComponentProps = {
   onSubmit: (data: {
     name: string;
-    descritpion: string;
+    description: string;
     ingredients: string[];
     steps: string[];
     difficulty: "easy" | "medium" | "hard" | "professional";
     time: number;
     active: boolean;
+    tags: string[];
+    images: File[];
   }) => void;
+  tags: JsonList[];
+  onAddNewTag: (value: string) => void;
 };
 
 export default function CreateRecipeComponent({
   onSubmit,
+  tags,
+  onAddNewTag,
 }: CreateRecipeComponentProps) {
-
   const form = useForm<
     z.infer<typeof FormSchema> & { ingedientsStr: string; stepsString: string }
   >({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
-      descritpion: "",
+      description: "",
       ingredients: [],
       steps: [],
       difficulty: "easy",
       time: "0",
       active: true,
+      tags: [],
+      images: [],
     },
   });
 
@@ -110,18 +98,25 @@ export default function CreateRecipeComponent({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => {
-            // onSubmit({
-            //   active: data.active,
-            //   description: data.descritpion,
-            //   name: data.name,
-            // });
+            onSubmit({
+              active: data.active,
+              description: data.description,
+              difficulty: data.difficulty,
+              images: data.images,
+              ingredients: data.ingredients,
+              name: data.name,
+              steps: data.steps,
+              tags: data.tags,
+              time: parseInt(data.time),
+            });
           })}
-          className="space-y-6 w-100"
+          className="space-y-6"
         >
-          <Tabs defaultValue="account" className="w-[400px]">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs defaultValue="account">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="account">Basic Info</TabsTrigger>
               <TabsTrigger value="password">Details Info</TabsTrigger>
+              <TabsTrigger value="images">Images</TabsTrigger>
             </TabsList>
             <TabsContent value="account">
               <BasicInfoStep form={form} />
@@ -135,12 +130,30 @@ export default function CreateRecipeComponent({
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <DetailedInfoStep buttonAddIngredient={buttonAddIngredient} buttonAddStep={buttonAddStep} form={form} handleAddIngredient={(field) => {
-                    handleAddIngredient(field);
-                  }} handleAddStep={(field) => {
-                    handleAddStep(field);
-                  }}
+                  <DetailedInfoStep
+                    buttonAddIngredient={buttonAddIngredient}
+                    buttonAddStep={buttonAddStep}
+                    form={form}
+                    handleAddIngredient={(field) => {
+                      handleAddIngredient(field);
+                    }}
+                    handleAddStep={(field) => {
+                      handleAddStep(field);
+                    }}
+                    tags={tags}
+                    onAddNewTag={onAddNewTag}
                   />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="images">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Images</CardTitle>
+                  <CardDescription>Images of the recipe</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <ImagesStep form={form} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -149,6 +162,6 @@ export default function CreateRecipeComponent({
           <Button type="submit">Submit</Button>
         </form>
       </Form>
-    </div >
+    </div>
   );
 }

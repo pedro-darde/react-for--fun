@@ -1,5 +1,6 @@
 import { DataTable } from "@/components/datatable/DataTable";
 import CreateRecipeComponent from "@/components/recipes/CreateRecipe";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,11 +10,28 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { PaginatedResponse } from "@/services/BaseService";
+import { JsonService } from "@/services/JsonService";
 import { RecipeService } from "@/services/RecipeService";
+import { JsonList } from "@/types/JsonList";
 import { Recipe } from "@/types/Recipe";
-import { useState } from "react";
+import { Tag } from "@/types/Tag";
+import { ColumnDef } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function ListRecipe() {
+  const [tags, setTags] = useState<JsonList[]>([]);
+
+  const searchTags = async () => {
+    const jsonTagService = new JsonService<Tag>("tags");
+    const data = await jsonTagService.getJson();
+    setTags(data);
+  };
+
+  useEffect(() => {
+    searchTags();
+  }, []);
+
   const [recipes, setRecipes] = useState<PaginatedResponse<Recipe>>({
     page: 0,
     per_page: 10,
@@ -28,7 +46,7 @@ export default function ListRecipe() {
     setRecipes(response);
   };
 
-  const columns = [
+  const columns: ColumnDef<Recipe>[] = [
     {
       accessorKey: "id",
       header: "ID",
@@ -41,11 +59,73 @@ export default function ListRecipe() {
       accessorKey: "description",
       header: "Description",
     },
+
+    {
+      accessorKey: "steps",
+      header: "Steps",
+      cell({ row: { original } }) {
+        return (
+          <div className="flex flex-col gap-4 w-1/2">
+            {original.steps.map((step, index) => {
+              return (
+                <Badge color="blue">
+                  {index + 1} - {step} <br />
+                </Badge>
+              );
+            })}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "tags",
+      header: "Tags",
+      cell({ row: { original } }) {
+        return (
+          <div className="flex flex-col gap-4 w-1/2">
+            {original.tags.map((tag, index) => {
+              return (
+                <Badge color="blue">
+                  {tag.description} <br />
+                </Badge>
+              );
+            })}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "ingredients",
+      header: "Ingredients",
+      cell({ row: { original } }) {
+        return (
+          <div className="flex flex-col gap-4 ">
+            {original.ingredients.map((ingredient, index) => {
+              return <Badge color="blue">{ingredient}</Badge>;
+            })}
+          </div>
+        );
+      },
+    },
     {
       accessorKey: "active",
       header: "Active",
+      cell({ row: { original } }) {
+        return <Badge> {original.active ? "Yes" : "No"} </Badge>;
+      },
     },
   ];
+
+  const createNewRecipe = async (data: any) => {
+    try {
+      await RecipeService.createWithFormData(data);
+      toast.success("Recipe created successfully.");
+    } catch (e: any) {
+      toast.error("Error while saving recipe, please contact admin.");
+    } finally {
+      setModalCreateRecipe(false);
+    }
+  };
 
   return (
     <div className="container  m-5  py-10">
@@ -67,11 +147,18 @@ export default function ListRecipe() {
         open={modalCreateRecipe}
         onOpenChange={(value) => setModalCreateRecipe(value)}
       >
-        <DialogContent>
+        <DialogContent className="min-w-[1250px]">
           <DialogHeader>
             <DialogTitle>Create Recipe</DialogTitle>
             <DialogDescription>Create a new recipe.</DialogDescription>
-            <CreateRecipeComponent onSubmit={(data) => { }} />
+            <CreateRecipeComponent
+              onSubmit={createNewRecipe}
+              tags={tags}
+              onAddNewTag={(tag) => {
+                console.log(tag);
+                setTags([...tags, { value: tag, label: tag }]);
+              }}
+            />
           </DialogHeader>
         </DialogContent>
       </Dialog>
