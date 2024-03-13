@@ -9,6 +9,7 @@ import {
 import { Outlet, Link } from "react-router-dom";
 
 export default function Root() {
+  console.log("on root");
   return (
     <div>
       <NavigationMenu>
