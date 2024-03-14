@@ -5,14 +5,17 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { useAuth } from "@/context/auth";
 
 import { Outlet, Link } from "react-router-dom";
 
 export default function Root() {
-  console.log("on root");
+  const { user, isLogged } = useAuth()
+
+
   return (
     <div>
-      <NavigationMenu>
+      {isLogged ? (<NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
             <Link to="/">
@@ -36,7 +39,8 @@ export default function Root() {
             </Link>
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
+      </NavigationMenu>) : null}
+
       <div className="flex h-screen items-center justify-center p-5">
         <div id="detail" style={{ minWidth: "100%" }}>
           <Outlet />
